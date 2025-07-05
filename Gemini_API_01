@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gobybot.com - Your AI-Powered Travel Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://placehold.co/1920x1080/000022/FFFFFF?text=AI+Travel+Concept');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .backdrop-blur-md {
+            backdrop-filter: blur(12px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgba(30, 41, 59, 0.8);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+        }
+        .dropdown-content label {
+            display: block;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+        .dropdown-content label:hover {
+            background-color: rgba(71, 85, 105, 0.8);
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .notification {
+            transition: opacity 0.5s, transform 0.5s;
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white">
+
+    <!-- Firebase/Auth Modal -->
+    <div id="auth-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center">
+        <div class="bg-slate-800 p-8 rounded-lg shadow-xl w-full max-w-sm">
+            <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center">Sign Up / Login</h2>
+            <div id="auth-error" class="text-red-400 mb-4 text-sm min-h-[20px]"></div>
+            <input type="email" id="email-input" placeholder="Enter your email" class="w-full bg-slate-700 border border-slate-600 rounded-md p-3 mb-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="auth-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">Continue with Email</button>
+            <button id="close-modal" class="w-full mt-4 bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">Close</button>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center">
+        <div class="bg-slate-800 p-8 rounded-lg shadow-xl w-full max-w-sm text-center">
+            <p id="confirm-message" class="text-lg mb-6"></p>
+            <div class="flex justify-center gap-4">
+                <button id="confirm-yes" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-8 rounded-md transition duration-300">Yes</button>
+                <button id="confirm-no" class="bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-8 rounded-md transition duration-300">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification hidden fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg max-w-sm"></div>
+
+
+    <div class="container mx-auto p-4 min-h-screen">
+        <header class="flex justify-between items-center py-4 mb-6">
+            <h1 class="text-4xl font-bold text-white tracking-wider">gobybot.com</h1>
+            <button id="login-signup-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">Login / Sign Up</button>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Left Column: Accommodation -->
+            <aside class="w-full lg:w-1/4 bg-slate-800 bg-opacity-70 backdrop-blur-md p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 border-b-2 border-slate-600 pb-2">ACCOMMODATION</h2>
+                <ul class="space-y-3">
+                    <li><a href="https://www.airbnb.com" target="_blank" class="hover:text-blue-400 transition duration-300">Airbnb.com</a></li>
+                    <li><a href="https://www.booking.com" target="_blank" class="hover:text-blue-400 transition duration-300">Booking.com</a></li>
+                    <li><a href="https://www.vrbo.com" target="_blank" class="hover:text-blue-400 transition duration-300">VRBO.com</a></li>
+                    <li><a href="https://www.expedia.com" target="_blank" class="hover:text-blue-400 transition duration-300">Expedia.com</a></li>
+                    <li><a href="https://www.agoda.com" target="_blank" class="hover:text-blue-400 transition duration-300">Agoda.com</a></li>
+                </ul>
+            </aside>
+
+            <!-- Center Column: Trip Planner -->
+            <main class="w-full lg:w-1/2 bg-slate-800 bg-opacity-70 backdrop-blur-md p-6 rounded-lg shadow-lg flex flex-col">
+                <h2 class="text-3xl font-bold mb-6 text-center">Plan Your Perfect Trip</h2>
+                
+                <div class="space-y-6 flex-grow flex flex-col">
+                    <!-- Duration -->
+                    <div>
+                        <label for="duration" class="block text-lg font-medium mb-2">1. Select Trip Duration</label>
+                        <div class="flex gap-4">
+                            <input type="date" id="start-date" class="w-full bg-slate-700 border border-slate-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="date" id="end-date" class="w-full bg-slate-700 border border-slate-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Destination -->
+                    <div>
+                        <label for="country" class="block text-lg font-medium mb-2">2. Choose Your Destination</label>
+                        <select id="country" class="w-full bg-slate-700 border border-slate-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select a Country</option>
+                            <!-- Countries will be populated by JS -->
+                        </select>
+                        <div id="cities-container" class="mt-4 hidden">
+                            <h3 class="font-medium mb-2">Select Cities:</h3>
+                            <div id="cities-checkboxes" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Information Fields -->
+                    <div class="dropdown relative">
+                        <button class="w-full bg-slate-700 border border-slate-600 rounded-md p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex justify-between items-center">
+                            <span>3. What information do you need?</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="info-fields" class="dropdown-content w-full">
+                            <!-- Info fields will be populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Budget -->
+                    <div>
+                        <label for="budget" class="block text-lg font-medium mb-2">4. What's your budget (USD)?</label>
+                        <input type="number" id="budget" placeholder="e.g., 2000" class="w-full bg-slate-700 border border-slate-600 rounded-md p-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <button id="generate-plan-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-md transition duration-300 mt-4">Generate Trip Plan</button>
+                    
+                    <!-- AI Response Area -->
+                    <div id="ai-response-container" class="mt-6 flex-grow flex flex-col hidden">
+                        <h3 class="text-2xl font-semibold mb-4">Your AI-Generated Itinerary</h3>
+                        <div id="ai-response" class="flex-grow bg-slate-900 p-4 rounded-lg custom-scrollbar overflow-y-auto min-h-[200px] border border-slate-700">
+                           <!-- AI response will be displayed here -->
+                           <div id="loading-indicator" class="hidden text-center p-8">
+                               <svg class="animate-spin h-8 w-8 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                               </svg>
+                               <p class="mt-4">Generating your personalized trip plan...</p>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Column: Airtickets -->
+            <aside class="w-full lg:w-1/4 bg-slate-800 bg-opacity-70 backdrop-blur-md p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4 border-b-2 border-slate-600 pb-2">AIRTICKETS</h2>
+                <ul class="space-y-3">
+                    <li><a href="https://www.skyscanner.net" target="_blank" class="hover:text-blue-400 transition duration-300">skyscanner.net</a></li>
+                    <li><a href="https://www.cheaptickets.com" target="_blank" class="hover:text-blue-400 transition duration-300">cheaptickets.com</a></li>
+                    <li><a href="https://www.kayak.com" target="_blank" class="hover:text-blue-400 transition duration-300">kayak.com</a></li>
+                    <li><a href="https://www.moonsand.com" target="_blank" class="hover:text-blue-400 transition duration-300">moonsand.com</a></li>
+                    <li><a href="https://www.kiwi.com" target="_blank" class="hover:text-blue-400 transition duration-300">kiwi.com</a></li>
+                    <li><a href="https://www.google.com/flights" target="_blank" class="hover:text-blue-400 transition duration-300">google.com/flights</a></li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailLink, sendSignInLinkToEmail, isSignInWithEmailLink, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Configuration ---
+        // IMPORTANT: Replace with your actual Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- DOM Elements ---
+        const loginSignupBtn = document.getElementById('login-signup-btn');
+        const authModal = document.getElementById('auth-modal');
+        const authTitle = document.getElementById('auth-title');
+        const closeModalBtn = document.getElementById('close-modal');
+        const authButton = document.getElementById('auth-button');
+        const emailInput = document.getElementById('email-input');
+        const authError = document.getElementById('auth-error');
+        const countrySelect = document.getElementById('country');
+        const citiesContainer = document.getElementById('cities-container');
+        const citiesCheckboxes = document.getElementById('cities-checkboxes');
+        const infoFieldsContainer = document.getElementById('info-fields');
+        const generatePlanBtn = document.getElementById('generate-plan-btn');
+        const aiResponseContainer = document.getElementById('ai-response-container');
+        const aiResponseDiv = document.getElementById('ai-response');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const budgetInput = document.getElementById('budget');
+        const notification = document.getElementById('notification');
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmYesBtn = document.getElementById('confirm-yes');
+        const confirmNoBtn = document.getElementById('confirm-no');
+
+        // --- Global State ---
+        let isCompletingSignIn = false;
+
+        // --- Data ---
+        const destinations = {
+            "USA": ["New York", "Los Angeles", "Chicago", "Miami", "Las Vegas"],
+            "Canada": ["Toronto", "Vancouver", "Montreal", "Calgary"],
+            "UK": ["London", "Manchester", "Edinburgh", "Liverpool"],
+            "France": ["Paris", "Nice", "Marseille", "Lyon"],
+            "Japan": ["Tokyo", "Kyoto", "Osaka", "Sapporo"],
+            "Australia": ["Sydney", "Melbourne", "Brisbane", "Perth"]
+        };
+
+        const infoOptions = [
+            "Weather", "Transport information", "Cell Phone SIM Card companies",
+            "Visa information", "Vaccination requirements", "Travel advisory (US & EU)",
+            "Places to visit", "Food (restaurants, street food)", "Halal/Non-Halal food", "Vegan/Non-Vegan food"
+        ];
+
+        // --- UI Functions ---
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.classList.remove('hidden', 'bg-green-500', 'bg-red-500', 'show');
+            notification.classList.add(isError ? 'bg-red-500' : 'bg-green-500');
+            
+            // Use a timeout to allow the 'hidden' class to be removed before adding 'show' for the transition
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                // Hide it completely after transition
+                 setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 500);
+            }, 4000);
+        }
+
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                confirmMessage.textContent = message;
+                confirmModal.classList.remove('hidden');
+
+                confirmYesBtn.onclick = () => {
+                    confirmModal.classList.add('hidden');
+                    resolve(true);
+                };
+
+                confirmNoBtn.onclick = () => {
+                    confirmModal.classList.add('hidden');
+                    resolve(false);
+                };
+            });
+        }
+
+        // --- Core Functions ---
+
+        function populateDropdowns() {
+            for (const country in destinations) {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            }
+            infoOptions.forEach(optionText => {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="checkbox" value="${optionText}" class="mr-2">${optionText}`;
+                infoFieldsContainer.appendChild(label);
+            });
+        }
+
+        function handleCountryChange() {
+            const selectedCountry = countrySelect.value;
+            citiesCheckboxes.innerHTML = '';
+            if (selectedCountry && destinations[selectedCountry]) {
+                citiesContainer.classList.remove('hidden');
+                destinations[selectedCountry].forEach(city => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `<label class="flex items-center"><input type="checkbox" value="${city}" class="mr-2 bg-slate-600 rounded">${city}</label>`;
+                    citiesCheckboxes.appendChild(div);
+                });
+            } else {
+                citiesContainer.classList.add('hidden');
+            }
+        }
+
+        async function generateTripPlan() {
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+            const country = countrySelect.value;
+            const selectedCities = Array.from(citiesCheckboxes.querySelectorAll('input:checked')).map(cb => cb.value);
+            const selectedInfo = Array.from(infoFieldsContainer.querySelectorAll('input:checked')).map(cb => cb.value);
+            const budget = budgetInput.value;
+
+            if (!startDate || !endDate || !country || selectedCities.length === 0 || selectedInfo.length === 0) {
+                showNotification('Please fill all fields: duration, country, city, and info needed.', true);
+                return;
+            }
+
+            aiResponseContainer.classList.remove('hidden');
+            loadingIndicator.classList.remove('hidden');
+            aiResponseDiv.innerHTML = '';
+            aiResponseDiv.appendChild(loadingIndicator);
+
+            const prompt = `Create a travel plan...`; // Prompt remains the same
+
+            try {
+                console.log("Making API call with prompt:", prompt);
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                const mockResponse = `
+### Your Trip to ${selectedCities.join(' & ')}, ${country}
+**Duration:** ${startDate} to ${endDate}
+**Budget:** Approx. $${budget} USD
+---
+${selectedInfo.includes('Weather') ? `#### 🌦️ Weather Forecast
+* **${selectedCities[0]}:** Expect average temperatures between 15°C and 25°C. Pack layers!
+* **${selectedCities.length > 1 ? selectedCities[1] : ''}:** ${selectedCities.length > 1 ? 'Slightly warmer, around 18°C to 28°C.' : ''}` : ''}
+${selectedInfo.includes('Transport information') ? `#### 🚌 Transport Information
+* **Public Transit:** Both cities have excellent metro systems. A weekly pass costs around $30.
+* **Ride-Hailing:** Uber and Lyft are widely available.` : ''}
+${selectedInfo.includes('Cell Phone SIM Card companies') ? `#### 📱 SIM Cards
+* **Major Providers:** Look for T-Mobile or AT&T at the airport.
+* **Cost:** Tourist plans start at around $40 for 15GB of data.` : ''}
+${selectedInfo.includes('Places to visit') ? `#### 🗺️ Places to Visit (7-Day Itinerary Example)
+* **Day 1-3 (${selectedCities[0]}):** Visit the Central Museum, walk across the Grand Bridge, explore the Old Town.
+* **Day 4:** Travel to ${selectedCities.length > 1 ? selectedCities[1] : 'the next destination'}.
+* **Day 5-7 (${selectedCities.length > 1 ? selectedCities[1] : ''}):** See the National Tower, relax at the City Park, enjoy the waterfront.` : ''}
+${selectedInfo.includes('Food (restaurants, street food)') ? `#### 🍔 Food Guide
+* **Must-Try:** The famous \`City Burger\` from a street vendor in the main square.
+* **Top Restaurant:** "The Gourmet Spot" for fine dining (reservation recommended).` : ''}
+*Disclaimer: This is an AI-generated plan. Please verify all details like visa and vaccination requirements from official sources.*
+                `;
+
+                let htmlResponse = mockResponse.replace(/### (.*)/g, '<h3 class="text-xl font-semibold mt-4 mb-2">$1</h3>')
+                                               .replace(/#### (.*)/g, '<h4 class="text-lg font-semibold mt-3 mb-1">$1</h4>')
+                                               .replace(/\*\*([^*]+):\*\*/g, '<strong>$1:</strong>')
+                                               .replace(/\* (.*)/g, '<li class="ml-5 list-disc">$1</li>');
+
+                loadingIndicator.classList.add('hidden');
+                aiResponseDiv.innerHTML = htmlResponse;
+                if (auth.currentUser) { saveTripData(auth.currentUser.uid); }
+
+            } catch (error) {
+                loadingIndicator.classList.add('hidden');
+                aiResponseDiv.innerHTML = '<p class="text-red-400">Sorry, something went wrong. Please try again.</p>';
+                console.error("Error generating trip plan:", error);
+            }
+        }
+        
+        // --- Firebase Auth Functions ---
+        function showAuthModal() { authModal.classList.remove('hidden'); }
+        function hideAuthModal() {
+            authModal.classList.add('hidden');
+            authError.textContent = '';
+            emailInput.value = '';
+            authTitle.textContent = "Sign Up / Login";
+        }
+
+        async function handleAuth() {
+            const email = emailInput.value;
+            if (!email) {
+                authError.textContent = 'Please enter your email address.';
+                return;
+            }
+            authError.textContent = '';
+            authButton.disabled = true;
+
+            if (isCompletingSignIn) {
+                authButton.textContent = 'Signing in...';
+                try {
+                    await signInWithEmailLink(auth, email, window.location.href);
+                    window.localStorage.removeItem('emailForSignIn');
+                    showNotification("You have been successfully signed in!");
+                    hideAuthModal();
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } catch (error) {
+                    console.error(error);
+                    authError.textContent = "Sign in failed. The link may be expired or the email may not match.";
+                } finally {
+                    isCompletingSignIn = false;
+                }
+            } else {
+                authButton.textContent = 'Sending link...';
+                const actionCodeSettings = { url: window.location.href, handleCodeInApp: true };
+                try {
+                    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+                    window.localStorage.setItem('emailForSignIn', email);
+                    showNotification(`A sign-in link has been sent to ${email}.`);
+                    hideAuthModal();
+                } catch (error) {
+                    console.error(error);
+                    authError.textContent = error.message;
+                }
+            }
+            authButton.disabled = false;
+            authButton.textContent = 'Continue with Email';
+        }
+        
+        async function completeSignInOnLoad() {
+            if (isSignInWithEmailLink(auth, window.location.href)) {
+                let email = window.localStorage.getItem('emailForSignIn');
+                if (email) {
+                    try {
+                        await signInWithEmailLink(auth, email, window.location.href);
+                        window.localStorage.removeItem('emailForSignIn');
+                        showNotification("Welcome back! You've been signed in.");
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } catch (error) {
+                        isCompletingSignIn = true;
+                        showAuthModal();
+                        authError.textContent = "The link is valid, but we need you to confirm your email.";
+                    }
+                } else {
+                    isCompletingSignIn = true;
+                    showAuthModal();
+                    authTitle.textContent = "Confirm Your Email";
+                    authError.textContent = "Please enter your email to complete the sign-in process.";
+                }
+            }
+        }
+
+        async function saveTripData(userId) {
+            const tripData = {
+                startDate: startDateInput.value, endDate: endDateInput.value, country: countrySelect.value,
+                selectedCities: Array.from(citiesCheckboxes.querySelectorAll('input:checked')).map(cb => cb.value),
+                selectedInfo: Array.from(infoFieldsContainer.querySelectorAll('input:checked')).map(cb => cb.value),
+                budget: budgetInput.value, aiResponse: aiResponseDiv.innerHTML
+            };
+            try {
+                await setDoc(doc(db, "users", userId), { tripData });
+                console.log("Trip data saved!");
+            } catch (e) { console.error("Error adding document: ", e); }
+        }
+
+        async function loadTripData(userId) {
+            const docRef = doc(db, "users", userId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const tripData = docSnap.data().tripData;
+                startDateInput.value = tripData.startDate || '';
+                endDateInput.value = tripData.endDate || '';
+                countrySelect.value = tripData.country || '';
+                handleCountryChange();
+                setTimeout(() => {
+                    if (tripData.selectedCities) {
+                        tripData.selectedCities.forEach(city => {
+                            const checkbox = citiesCheckboxes.querySelector(`input[value="${city}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+                }, 100);
+                if (tripData.selectedInfo) {
+                    tripData.selectedInfo.forEach(info => {
+                        const checkbox = infoFieldsContainer.querySelector(`input[value="${info}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+                budgetInput.value = tripData.budget || '';
+                if(tripData.aiResponse) {
+                    aiResponseContainer.classList.remove('hidden');
+                    aiResponseDiv.innerHTML = tripData.aiResponse;
+                }
+                showNotification("Your previous trip plan has been loaded.");
+            } else { console.log("No saved trip plan found for this user."); }
+        }
+
+        // --- Event Listeners ---
+        loginSignupBtn.addEventListener('click', async () => {
+             if (auth.currentUser) {
+                const wantsToSignOut = await customConfirm('Do you want to sign out?');
+                if (wantsToSignOut) { signOut(auth); }
+             } else { showAuthModal(); }
+        });
+        closeModalBtn.addEventListener('click', hideAuthModal);
+        authButton.addEventListener('click', handleAuth);
+        countrySelect.addEventListener('change', handleCountryChange);
+        generatePlanBtn.addEventListener('click', generateTripPlan);
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            populateDropdowns();
+            completeSignInOnLoad();
+            onAuthStateChanged(auth, user => {
+                if (user) {
+                    loginSignupBtn.textContent = 'Sign Out';
+                    loginSignupBtn.classList.replace('bg-blue-600', 'bg-red-600');
+                    loginSignupBtn.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
+                    loadTripData(user.uid);
+                } else {
+                    loginSignupBtn.textContent = 'Login / Sign Up';
+                    loginSignupBtn.classList.replace('bg-red-600', 'bg-blue-600');
+                    loginSignupBtn.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+                }
+            });
+            const inputsToTrack = [startDateInput, endDateInput, countrySelect, budgetInput];
+            inputsToTrack.forEach(input => {
+                input.addEventListener('change', () => { if (auth.currentUser) { saveTripData(auth.currentUser.uid); } });
+            });
+            [citiesCheckboxes, infoFieldsContainer].forEach(container => {
+                 container.addEventListener('change', (e) => {
+                    if (e.target.type === 'checkbox' && auth.currentUser) { saveTripData(auth.currentUser.uid); }
+                 });
+            });
+        });
+    </script>
+</body>
+</html>
