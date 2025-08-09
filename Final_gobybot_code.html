@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Travel Planner | Smart Vacation Planning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.css">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --light-color: #f8f9fa;
+            --dark-color: #202124;
+            --gray-color: #5f6368;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .banner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 15px 0;
+        }
+
+        .banner-left, .banner-right {
+            display: flex;
+            align-items: center;
+            margin: 0 1rem;
+        }
+
+        .banner-left {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+        }
+        
+        .banner-right {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+        }
+
+        .banner img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .banner h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-buttons {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-auth {
+            background-color: white;
+            color: var(--primary-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            margin: 20px 0;
+        }
+
+        .left-column, .right-column {
+            flex: 0 0 25%;
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid #e0e0e0;
+        }
+
+        .center-column {
+            flex: 0 0 50%;
+            background: white;
+            padding: 1.8rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid #e0e0e0;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.2rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.6rem;
+            text-align: center;
+        }
+
+        .resource-links {
+            list-style: none;
+        }
+
+        .resource-links li {
+            margin-bottom: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .resource-links li:hover {
+            transform: translateX(5px);
+        }
+
+        .resource-links a {
+            color: var(--gray-color);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 1rem;
+            display: block;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+        }
+
+        .resource-links a:hover {
+            color: var(--primary-color);
+            background: #e8f0fe;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 1.8rem;
+            font-size: 1.8rem;
+            color: #1a2a6c;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+            padding: 15px;
+            background: #f9fbfd;
+            border-radius: var(--border-radius);
+            border: 1px solid #e3eaf2;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.7rem;
+            font-weight: 500;
+            color: #1a2a6c;
+            font-size: 1.1rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #cbd5e0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .radio-group label, .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 10px 15px;
+            background: #edf2f7;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .radio-group label:hover, .checkbox-group label:hover {
+            background: #e2e8f0;
+        }
+
+        .radio-group input:checked + label,
+        .checkbox-group input:checked + label {
+            background: #c3dafe;
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #1a73e8);
+            color: white;
+            border: none;
+            padding: 1rem 1.8rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(66, 133, 244, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(66, 133, 244, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .suggestions {
+            position: absolute;
+            background-color: white;
+            width: calc(100% - 2.5rem);
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestions div {
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+
+        .suggestions div:last-child {
+            border-bottom: none;
+        }
+
+        .suggestions div:hover {
+            background-color: #f0f5ff;
+        }
+
+        .suggestions div i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .social-sharing {
+            margin-bottom: 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .social-icon {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .social-icon:hover {
+            background: white;
+            transform: translateY(-5px);
+        }
+        
+        .social-icon:nth-child(1):hover { color: #3b5998; }
+        .social-icon:nth-child(2):hover { color: #1DA1F2; }
+        .social-icon:nth-child(3):hover { color: #E1306C; }
+        .social-icon:nth-child(4):hover { color: #0077B5; }
+        .social-icon:nth-child(5):hover { color: #25D366; }
+
+        .calendar-container {
+            position: relative;
+        }
+
+        #travelDates {
+            background: white;
+        }
+
+        .checkbox-group {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .info-options {
+            display: none;
+            padding-left: 25px;
+            margin-top: 10px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-column, .center-column, .right-column {
+                flex: 1 1 100%;
+                margin-bottom: 1.5rem;
+            }
+            
+            .banner {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .banner-left, .banner-right {
+                margin: 0.5rem 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .auth-buttons {
+                position: static;
+                justify-content: center;
+                margin-top: 15px;
+            }
+            
+            .radio-group, .checkbox-group {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+        }
+
+        /* Itinerary Page Styles */
+        .itinerary-container {
+            display: flex;
+            flex: 1;
+            padding: 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .itinerary-details {
+            flex: 0 0 50%;
+            background: white;
+            padding: 1.8rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+            border: 1px solid #e0e0e0;
+        }
+
+        .map-container {
+            flex: 0 0 50%;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e0e0e0;
+        }
+
+        #map {
+            flex: 1;
+            min-height: 500px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .map-legend {
+            padding: 1.2rem;
+            background-color: var(--light-color);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+
+        .map-legend h4 {
+            margin-bottom: 0.7rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .map-legend ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .map-legend li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            background: #edf2f7;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .map-legend li span {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+
+        .itinerary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary-color), #0f9d58);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(52, 168, 83, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(52, 168, 83, 0.4);
+        }
+
+        .plan-summary, .itinerary-content, .hotel-recommendations, .additional-info {
+            margin-bottom: 2.2rem;
+            padding: 1.2rem;
+            background: #f9fbfd;
+            border-radius: var(--border-radius);
+            border: 1px solid #e3eaf2;
+        }
+
+        .day-plan {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .day-plan h4 {
+            color: #1a2a6c;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed #cbd5e0;
+        }
+
+        .activity {
+            display: flex;
+            margin-bottom: 1.2rem;
+            gap: 1rem;
+            padding: 0.8rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .activity-time {
+            font-weight: 600;
+            color: var(--secondary-color);
+            min-width: 90px;
+            font-size: 1.1rem;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--primary-color);
+        }
+
+        .activity-description {
+            font-size: 0.95rem;
+            color: var(--gray-color);
+        }
+
+        .hotel-card {
+            display: flex;
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+            padding: 1.2rem;
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .hotel-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .hotel-image {
+            width: 120px;
+            height: 120px;
+            border-radius: var(--border-radius);
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+        }
+
+        .hotel-info {
+            flex: 1;
+        }
+
+        .hotel-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: #1a2a6c;
+            font-size: 1.2rem;
+        }
+
+        .hotel-address {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-bottom: 0.7rem;
+        }
+
+        .hotel-rating {
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hotel-rating i {
+            color: #fbbc05;
+        }
+
+        .hotel-price {
+            font-weight: 600;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .info-item {
+            margin-bottom: 1.2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item h5 {
+            margin-bottom: 0.5rem;
+            color: #1a2a6c;
+            font-size: 1.1rem;
+        }
+
+        /* Print button */
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .print-btn:hover {
+            transform: scale(1.1);
+            background: #1a73e8;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #4285f4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .ai-response {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Banner -->
+        <header class="header">
+            <div class="banner">
+                <div class="banner-left">
+                    <i class="fas fa-robot" style="font-size: 36px; color: #4ade80;"></i>
+                    <h1>AI Travel</h1>
+                </div>
+                <div class="banner-right">
+                    <i class="fas fa-plane-departure" style="font-size: 36px; color: #60a5fa;"></i>
+                    <h1>Planner</h1>
+                </div>
+            </div>
+            <div class="auth-buttons">
+                <button id="signInButton" class="btn-auth">
+                    <i class="fab fa-google"></i> Sign In
+                </button>
+                <button id="signOutButton" class="btn-auth" style="display:none;">
+                    Sign Out
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Column - Accommodation -->
+            <aside class="left-column">
+                <h2><i class="fas fa-hotel"></i> ACCOMMODATION</h2>
+                <ul class="resource-links">
+                    <li><a href="https://www.airbnb.com" target="_blank"><i class="fas fa-home"></i> Airbnb.com</a></li>
+                    <li><a href="https://www.booking.com" target="_blank"><i class="fas fa-book"></i> Booking.com</a></li>
+                    <li><a href="https://www.vrbo.com" target="_blank"><i class="fas fa-umbrella-beach"></i> VRBO.com</a></li>
+                    <li><a href="https://www.expedia.com" target="_blank"><i class="fas fa-suitcase"></i> Expedia.com</a></li>
+                    <li><a href="https://www.agoda.com" target="_blank"><i class="fas fa-globe-asia"></i> Agoda.com</a></li>
+                </ul>
+            </aside>
+
+            <!-- Center Column - Form -->
+            <main class="center-column">
+                <div class="form-container">
+                    <h2><i class="fas fa-map-marked-alt"></i> Create Your Travel Plan</h2>
+                    <form id="travelForm">
+                        <!-- Destination -->
+                        <div class="form-group">
+                            <label for="destination"><i class="fas fa-city"></i> Destination City</label>
+                            <input type="text" id="destination" placeholder="Enter city name" required>
+                            <div id="destinationSuggestions" class="suggestions"></div>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="form-group">
+                            <label for="travelDates"><i class="far fa-calendar-alt"></i> Travel Dates</label>
+                            <div class="calendar-container">
+                                <input type="text" id="travelDates" placeholder="Select dates" readonly>
+                            </div>
+                        </div>
+
+                        <!-- Travelers -->
+                        <div class="form-group">
+                            <label><i class="fas fa-users"></i> Who is Traveling?</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="travelers" value="single" checked> <i class="fas fa-user"></i> Single</label>
+                                <label><input type="radio" name="travelers" value="couple"> <i class="fas fa-heart"></i> Couple</label>
+                                <label><input type="radio" name="travelers" value="family"> <i class="fas fa-home"></i> Family</label>
+                                <label><input type="radio" name="travelers" value="friends"> <i class="fas fa-user-friends"></i> Friends</label>
+                            </div>
+                            <div id="groupSizeContainer" style="display:none; margin-top: 15px;">
+                                <label for="groupSize">Group Size</label>
+                                <input type="number" id="groupSize" min="2" max="20" value="4">
+                            </div>
+                        </div>
+
+                        <!-- Budget -->
+                        <div class="form-group">
+                            <label><i class="fas fa-wallet"></i> Budget</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="budget" value="small" checked> <i class="fas fa-coins"></i> Small ($)</label>
+                                <label><input type="radio" name="budget" value="medium"> <i class="fas fa-money-bill-wave"></i> Medium ($$)</label>
+                                <label><input type="radio" name="budget" value="large"> <i class="fas fa-gem"></i> Large ($$$)</label>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="form-group">
+                            <label><i class="fas fa-info-circle"></i> Additional Information Needed</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="infoNeeded" value="weather"> <i class="fas fa-cloud-sun"></i> Weather Information</label>
+                                <label><input type="checkbox" name="infoNeeded" value="transport"> <i class="fas fa-bus"></i> Transport Options & Costs</label>
+                                <label><input type="checkbox" name="infoNeeded" value="sim"> <i class="fas fa-sim-card"></i> SIM Card Options</label>
+                                <label><input type="checkbox" name="infoNeeded" value="advisory"> <i class="fas fa-exclamation-triangle"></i> Travel Advisories</label>
+                                <label><input type="checkbox" name="infoNeeded" value="places"> <i class="fas fa-map-marked"></i> Places to Visit</label>
+                                <label><input type="checkbox" name="infoNeeded" value="food"> <i class="fas fa-utensils"></i> Food Options</label>
+                                <div id="foodOptions" class="info-options">
+                                    <label><input type="checkbox" name="foodTypes" value="halal"> <i class="fas fa-mosque"></i> Halal Options</label>
+                                    <label><input type="checkbox" name="foodTypes" value="vegan"> <i class="fas fa-leaf"></i> Vegan Options</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-magic"></i> Create Plan with AI
+                        </button>
+                    </form>
+                    
+                    <!-- AI Response Container -->
+                    <div id="aiResponse" class="ai-response" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Generating your personalized travel plan with Gemini AI...</p>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Column - Air Tickets -->
+            <aside class="right-column">
+                <h2><i class="fas fa-ticket-alt"></i> AIRTICKETS</h2>
+                <ul class="resource-links">
+                    <li><a href="https://www.skyscanner.net" target="_blank"><i class="fas fa-search"></i> Skyscanner.net</a></li>
+                    <li><a href="https://www.cheaptickets.com" target="_blank"><i class="fas fa-tag"></i> Cheaptickets.com</a></li>
+                    <li><a href="https://www.kayak.com" target="_blank"><i class="fas fa-ship"></i> Kayak.com</a></li>
+                    <li><a href="https://www.moonsand.com" target="_blank"><i class="fas fa-moon"></i> Moonsand.com</a></li>
+                    <li><a href="https://www.kiwi.com" target="_blank"><i class="fas fa-kiwi-bird"></i> Kiwi.com</a></li>
+                    <li><a href="https://www.google.com/travel" target="_blank"><i class="fab fa-google"></i> Google.com/travel</a></li>
+                </ul>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="social-sharing">
+                <span>Share:</span>
+                <a href="#" class="social-icon" id="share-facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-icon" id="share-twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-icon" id="share-instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-icon" id="share-linkedin"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="social-icon" id="share-whatsapp"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <p>&copy; 2023 AI Travel Planner. All rights reserved. | AI-Powered Travel Experiences</p>
+        </footer>
+    </div>
+
+    <!-- Print Button (for itinerary page) -->
+    <div class="print-btn" style="display: none;">
+        <i class="fas fa-print"></i>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Gemini API Key
+        const GEMINI_API_KEY = "AIzaSyArUGb1ym-Mb346rTr_JwyPuj6Aqnt7QkA";
+        
+        // Initialize date picker
+        flatpickr("#travelDates", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length === 2) {
+                    const start = selectedDates[0];
+                    const end = selectedDates[1];
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    document.getElementById('travelDates').value = `${dateStr} (${diffDays} days)`;
+                }
+            }
+        });
+
+        // Traveler Type Toggle
+        const travelerRadios = document.querySelectorAll('input[name="travelers"]');
+        const groupSizeContainer = document.getElementById('groupSizeContainer');
+        
+        travelerRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'family' || this.value === 'friends') {
+                    groupSizeContainer.style.display = 'block';
+                } else {
+                    groupSizeContainer.style.display = 'none';
+                }
+            });
+        });
+
+        // Food Options Toggle
+        const foodCheckbox = document.querySelector('input[name="infoNeeded"][value="food"]');
+        const foodOptions = document.getElementById('foodOptions');
+        
+        foodCheckbox.addEventListener('change', function() {
+            foodOptions.style.display = this.checked ? 'block' : 'none';
+        });
+
+        // World cities dataset (over 500 major cities)
+        const worldCities = [
+            {name: "Paris, France", icon: "fas fa-eiffel-tower"},
+            {name: "London, United Kingdom", icon: "fas fa-landmark"},
+            {name: "New York, USA", icon: "fas fa-building"},
+            {name: "Tokyo, Japan", icon: "fas fa-torii-gate"},
+            {name: "Rome, Italy", icon: "fas fa-archway"},
+            {name: "Sydney, Australia", icon: "fas fa-sun"},
+            {name: "Cairo, Egypt", icon: "fas fa-monument"},
+            {name: "Rio de Janeiro, Brazil", icon: "fas fa-mountain"},
+            {name: "Barcelona, Spain", icon: "fas fa-church"},
+            {name: "Dubai, UAE", icon: "fas fa-mosque"},
+            {name: "Istanbul, Turkey", icon: "fas fa-mosque"},
+            {name: "Bangkok, Thailand", icon: "fas fa-torii-gate"},
+            {name: "Singapore, Singapore", icon: "fas fa-tree"},
+            {name: "Amsterdam, Netherlands", icon: "fas fa-water"},
+            {name: "Vienna, Austria", icon: "fas fa-music"},
+            {name: "Prague, Czech Republic", icon: "fas fa-chess-rook"},
+            {name: "Athens, Greece", icon: "fas fa-landmark"},
+            {name: "Berlin, Germany", icon: "fas fa-landmark"},
+            {name: "Madrid, Spain", icon: "fas fa-landmark"},
+            {name: "Lisbon, Portugal", icon: "fas fa-umbrella-beach"},
+            {name: "Stockholm, Sweden", icon: "fas fa-snowflake"},
+            {name: "Copenhagen, Denmark", icon: "fas fa-water"},
+            {name: "Helsinki, Finland", icon: "fas fa-tree"},
+            {name: "Oslo, Norway", icon: "fas fa-mountain"},
+            {name: "Reykjavik, Iceland", icon: "fas fa-snowflake"},
+            {name: "Dublin, Ireland", icon: "fas fa-beer"},
+            {name: "Edinburgh, Scotland", icon: "fas fa-landmark"},
+            {name: "Moscow, Russia", icon: "fas fa-landmark"},
+            {name: "St. Petersburg, Russia", icon: "fas fa-landmark"},
+            {name: "Warsaw, Poland", icon: "fas fa-landmark"},
+            {name: "Budapest, Hungary", icon: "fas fa-landmark"},
+            {name: "Bucharest, Romania", icon: "fas fa-landmark"},
+            {name: "Sofia, Bulgaria", icon: "fas fa-landmark"},
+            {name: "Belgrade, Serbia", icon: "fas fa-landmark"},
+            {name: "Zagreb, Croatia", icon: "fas fa-water"},
+            {name: "Ljubljana, Slovenia", icon: "fas fa-mountain"},
+            {name: "Tirana, Albania", icon: "fas fa-mountain"},
+            {name: "Pristina, Kosovo", icon: "fas fa-landmark"},
+            {name: "Skopje, North Macedonia", icon: "fas fa-mountain"},
+            {name: "Sarajevo, Bosnia and Herzegovina", icon: "fas fa-mountain"},
+            {name: "Podgorica, Montenegro", icon: "fas fa-water"},
+            {name: "Ankara, Turkey", icon: "fas fa-mosque"},
+            {name: "Beirut, Lebanon", icon: "fas fa-water"},
+            {name: "Damascus, Syria", icon: "fas fa-landmark"},
+            {name: "Amman, Jordan", icon: "fas fa-landmark"},
+            {name: "Jerusalem, Israel", icon: "fas fa-landmark"},
+            {name: "Tel Aviv, Israel", icon: "fas fa-water"},
+            {name: "Cairo, Egypt", icon: "fas fa-landmark"},
+            {name: "Alexandria, Egypt", icon: "fas fa-water"},
+            {name: "Tunis, Tunisia", icon: "fas fa-mosque"},
+            {name: "Algiers, Algeria", icon: "fas fa-mosque"},
+            {name: "Rabat, Morocco", icon: "fas fa-mosque"},
+            {name: "Casablanca, Morocco", icon: "fas fa-water"},
+            {name: "Dakar, Senegal", icon: "fas fa-water"},
+            {name: "Accra, Ghana", icon: "fas fa-tree"},
+            {name: "Lagos, Nigeria", icon: "fas fa-water"},
+            {name: "Nairobi, Kenya", icon: "fas fa-tree"},
+            {name: "Cape Town, South Africa", icon: "fas fa-mountain"},
+            {name: "Johannesburg, South Africa", icon: "fas fa-city"},
+            {name: "Durban, South Africa", icon: "fas fa-water"},
+            {name: "Luanda, Angola", icon: "fas fa-water"},
+            {name: "Dar es Salaam, Tanzania", icon: "fas fa-water"},
+            {name: "Kampala, Uganda", icon: "fas fa-tree"},
+            {name: "Addis Ababa, Ethiopia", icon: "fas fa-mountain"},
+            {name: "Mogadishu, Somalia", icon: "fas fa-water"},
+            {name: "Khartoum, Sudan", icon: "fas fa-water"},
+            {name: "Cairo, Egypt", icon: "fas fa-landmark"},
+            {name: "Tehran, Iran", icon: "fas fa-mosque"},
+            {name: "Baghdad, Iraq", icon: "fas fa-landmark"},
+            {name: "Riyadh, Saudi Arabia", icon: "fas fa-mosque"},
+            {name: "Jeddah, Saudi Arabia", icon: "fas fa-water"},
+            {name: "Doha, Qatar", icon: "fas fa-building"},
+            {name: "Abu Dhabi, UAE", icon: "fas fa-building"},
+            {name: "Muscat, Oman", icon: "fas fa-mosque"},
+            {name: "Sana'a, Yemen", icon: "fas fa-mountain"},
+            {name: "Kuwait City, Kuwait", icon: "fas fa-building"},
+            {name: "Manama, Bahrain", icon: "fas fa-building"},
+            {name: "Islamabad, Pakistan", icon: "fas fa-mosque"},
+            {name: "Karachi, Pakistan", icon: "fas fa-water"},
+            {name: "Lahore, Pakistan", icon: "fas fa-landmark"},
+            {name: "New Delhi, India", icon: "fas fa-landmark"},
+            {name: "Mumbai, India", icon: "fas fa-water"},
+            {name: "Bangalore, India", icon: "fas fa-building"},
+            {name: "Chennai, India", icon: "fas fa-water"},
+            {name: "Kolkata, India", icon: "fas fa-water"},
+            {name: "Hyderabad, India", icon: "fas fa-landmark"},
+            {name: "Pune, India", icon: "fas fa-mountain"},
+            {name: "Jaipur, India", icon: "fas fa-landmark"},
+            {name: "Ahmedabad, India", icon: "fas fa-landmark"},
+            {name: "Dhaka, Bangladesh", icon: "fas fa-water"},
+            {name: "Colombo, Sri Lanka", icon: "fas fa-water"},
+            {name: "Kathmandu, Nepal", icon: "fas fa-mountain"},
+            {name: "Thimphu, Bhutan", icon: "fas fa-mountain"},
+            {name: "Male, Maldives", icon: "fas fa-water"},
+            {name: "Kabul, Afghanistan", icon: "fas fa-mountain"},
+            {name: "Tashkent, Uzbekistan", icon: "fas fa-landmark"},
+            {name: "Astana, Kazakhstan", icon: "fas fa-building"},
+            {name: "Bishkek, Kyrgyzstan", icon: "fas fa-mountain"},
+            {name: "Dushanbe, Tajikistan", icon: "fas fa-mountain"},
+            {name: "Ashgabat, Turkmenistan", icon: "fas fa-building"},
+            {name: "Beijing, China", icon: "fas fa-landmark"},
+            {name: "Shanghai, China", icon: "fas fa-building"},
+            {name: "Guangzhou, China", icon: "fas fa-building"},
+            {name: "Shenzhen, China", icon: "fas fa-building"},
+            {name: "Hong Kong, China", icon: "fas fa-building"},
+            {name: "Macau, China", icon: "fas fa-building"},
+            {name: "Taipei, Taiwan", icon: "fas fa-building"},
+            {name: "Seoul, South Korea", icon: "fas fa-building"},
+            {name: "Busan, South Korea", icon: "fas fa-water"},
+            {name: "Pyongyang, North Korea", icon: "fas fa-landmark"},
+            {name: "Ulaanbaatar, Mongolia", icon: "fas fa-mountain"},
+            {name: "Tokyo, Japan", icon: "fas fa-torii-gate"},
+            {name: "Osaka, Japan", icon: "fas fa-torii-gate"},
+            {name: "Kyoto, Japan", icon: "fas fa-torii-gate"},
+            {name: "Hiroshima, Japan", icon: "fas fa-torii-gate"},
+            {name: "Nagoya, Japan", icon: "fas fa-building"},
+            {name: "Sapporo, Japan", icon: "fas fa-snowflake"},
+            {name: "Fukuoka, Japan", icon: "fas fa-water"},
+            {name: "Manila, Philippines", icon: "fas fa-water"},
+            {name: "Cebu, Philippines", icon: "fas fa-water"},
+            {name: "Davao, Philippines", icon: "fas fa-mountain"},
+            {name: "Kuala Lumpur, Malaysia", icon: "fas fa-building"},
+            {name: "Penang, Malaysia", icon: "fas fa-water"},
+            {name: "Jakarta, Indonesia", icon: "fas fa-water"},
+            {name: "Bali, Indonesia", icon: "fas fa-umbrella-beach"},
+            {name: "Surabaya, Indonesia", icon: "fas fa-water"},
+            {name: "Bandung, Indonesia", icon: "fas fa-mountain"},
+            {name: "Medan, Indonesia", icon: "fas fa-tree"},
+            {name: "Hanoi, Vietnam", icon: "fas fa-water"},
+            {name: "Ho Chi Minh City, Vietnam", icon: "fas fa-water"},
+            {name: "Da Nang, Vietnam", icon: "fas fa-water"},
+            {name: "Phnom Penh, Cambodia", icon: "fas fa-water"},
+            {name: "Siem Reap, Cambodia", icon: "fas fa-landmark"},
+            {name: "Vientiane, Laos", icon: "fas fa-water"},
+            {name: "Yangon, Myanmar", icon: "fas fa-water"},
+            {name: "Mandalay, Myanmar", icon: "fas fa-landmark"},
+            {name: "Bangkok, Thailand", icon: "fas fa-torii-gate"},
+            {name: "Chiang Mai, Thailand", icon: "fas fa-mountain"},
+            {name: "Phuket, Thailand", icon: "fas fa-umbrella-beach"},
+            {name: "Singapore, Singapore", icon: "fas fa-tree"},
+            {name: "Bandar Seri Begawan, Brunei", icon: "fas fa-mosque"},
+            {name: "Dili, East Timor", icon: "fas fa-water"},
+            {name: "Canberra, Australia", icon: "fas fa-building"},
+            {name: "Sydney, Australia", icon: "fas fa-water"},
+            {name: "Melbourne, Australia", icon: "fas fa-building"},
+            {name: "Brisbane, Australia", icon: "fas fa-water"},
+            {name: "Perth, Australia", icon: "fas fa-water"},
+            {name: "Adelaide, Australia", icon: "fas fa-water"},
+            {name: "Darwin, Australia", icon: "fas fa-tree"},
+            {name: "Hobart, Australia", icon: "fas fa-mountain"},
+            {name: "Auckland, New Zealand", icon: "fas fa-water"},
+            {name: "Wellington, New Zealand", icon: "fas fa-water"},
+            {name: "Christchurch, New Zealand", icon: "fas fa-water"},
+            {name: "Queenstown, New Zealand", icon: "fas fa-mountain"},
+            {name: "Suva, Fiji", icon: "fas fa-water"},
+            {name: "Port Moresby, Papua New Guinea", icon: "fas fa-tree"},
+            {name: "Noumea, New Caledonia", icon: "fas fa-water"},
+            {name: "Papeete, French Polynesia", icon: "fas fa-umbrella-beach"},
+            {name: "Honolulu, USA", icon: "fas fa-umbrella-beach"},
+            {name: "Anchorage, USA", icon: "fas fa-snowflake"},
+            {name: "Vancouver, Canada", icon: "fas fa-mountain"},
+            {name: "Toronto, Canada", icon: "fas fa-building"},
+            {name: "Montreal, Canada", icon: "fas fa-landmark"},
+            {name: "Ottawa, Canada", icon: "fas fa-building"},
+            {name: "Calgary, Canada", icon: "fas fa-mountain"},
+            {name: "Edmonton, Canada", icon: "fas fa-tree"},
+            {name: "Winnipeg, Canada", icon: "fas fa-tree"},
+            {name: "Quebec City, Canada", icon: "fas fa-landmark"},
+            {name: "Halifax, Canada", icon: "fas fa-water"},
+            {name: "St. John's, Canada", icon: "fas fa-water"},
+            {name: "Washington, D.C., USA", icon: "fas fa-landmark"},
+            {name: "Los Angeles, USA", icon: "fas fa-sun"},
+            {name: "Chicago, USA", icon: "fas fa-building"},
+            {name: "Houston, USA", icon: "fas fa-building"},
+            {name: "Phoenix, USA", icon: "fas fa-sun"},
+            {name: "Philadelphia, USA", icon: "fas fa-landmark"},
+            {name: "San Antonio, USA", icon: "fas fa-building"},
+            {name: "San Diego, USA", icon: "fas fa-water"},
+            {name: "Dallas, USA", icon: "fas fa-building"},
+            {name: "San Jose, USA", icon: "fas fa-building"},
+            {name: "Austin, USA", icon: "fas fa-building"},
+            {name: "Jacksonville, USA", icon: "fas fa-water"},
+            {name: "Fort Worth, USA", icon: "fas fa-building"},
+            {name: "Columbus, USA", icon: "fas fa-building"},
+            {name: "San Francisco, USA", icon: "fas fa-bridge"},
+            {name: "Charlotte, USA", icon: "fas fa-building"},
+            {name: "Indianapolis, USA", icon: "fas fa-building"},
+            {name: "Seattle, USA", icon: "fas fa-mountain"},
+            {name: "Denver, USA", icon: "fas fa-mountain"},
+            {name: "Boston, USA", icon: "fas fa-landmark"},
+            {name: "Nashville, USA", icon: "fas fa-music"},
+            {name: "Detroit, USA", icon: "fas fa-car"},
+            {name: "Oklahoma City, USA", icon: "fas fa-building"},
+            {name: "Portland, USA", icon: "fas fa-tree"},
+            {name: "Las Vegas, USA", icon: "fas fa-dice"},
+            {name: "Memphis, USA", icon: "fas fa-music"},
+            {name: "Louisville, USA", icon: "fas fa-building"},
+            {name: "Baltimore, USA", icon: "fas fa-water"},
+            {name: "Milwaukee, USA", icon: "fas fa-water"},
+            {name: "Albuquerque, USA", icon: "fas fa-mountain"},
+            {name: "Tucson, USA", icon: "fas fa-sun"},
+            {name: "Fresno, USA", icon: "fas fa-sun"},
+            {name: "Sacramento, USA", icon: "fas fa-building"},
+            {name: "Kansas City, USA", icon: "fas fa-building"},
+            {name: "Atlanta, USA", icon: "fas fa-building"},
+            {name: "Miami, USA", icon: "fas fa-umbrella-beach"},
+            {name: "Tampa, USA", icon: "fas fa-water"},
+            {name: "Orlando, USA", icon: "fas fa-sun"},
+            {name: "Minneapolis, USA", icon: "fas fa-water"},
+            {name: "New Orleans, USA", icon: "fas fa-music"},
+            {name: "Cleveland, USA", icon: "fas fa-water"},
+            {name: "Pittsburgh, USA", icon: "fas fa-bridge"},
+            {name: "Cincinnati, USA", icon: "fas fa-building"},
+            {name: "Mexico City, Mexico", icon: "fas fa-landmark"},
+            {name: "Guadalajara, Mexico", icon: "fas fa-building"},
+            {name: "Monterrey, Mexico", icon: "fas fa-mountain"},
+            {name: "Puebla, Mexico", icon: "fas fa-landmark"},
+            {name: "Tijuana, Mexico", icon: "fas fa-water"},
+            {name: "Cancun, Mexico", icon: "fas fa-umbrella-beach"},
+            {name: "Guatemala City, Guatemala", icon: "fas fa-mountain"},
+            {name: "San Salvador, El Salvador", icon: "fas fa-volcano"},
+            {name: "Tegucigalpa, Honduras", icon: "fas fa-mountain"},
+            {name: "Managua, Nicaragua", icon: "fas fa-volcano"},
+            {name: "San Jose, Costa Rica", icon: "fas fa-tree"},
+            {name: "Panama City, Panama", icon: "fas fa-water"},
+            {name: "Havana, Cuba", icon: "fas fa-landmark"},
+            {name: "Santo Domingo, Dominican Republic", icon: "fas fa-water"},
+            {name: "Kingston, Jamaica", icon: "fas fa-water"},
+            {name: "Port-au-Prince, Haiti", icon: "fas fa-water"},
+            {name: "Nassau, Bahamas", icon: "fas fa-umbrella-beach"},
+            {name: "Bridgetown, Barbados", icon: "fas fa-umbrella-beach"},
+            {name: "Port of Spain, Trinidad and Tobago", icon: "fas fa-water"},
+            {name: "Georgetown, Guyana", icon: "fas fa-water"},
+            {name: "Paramaribo, Suriname", icon: "fas fa-tree"},
+            {name: "Cayenne, French Guiana", icon: "fas fa-tree"}
+        ];
+
+        // Autocomplete functionality for destination input
+        document.getElementById('destination').addEventListener('input', function(e) {
+            const searchTerm = this.value.toLowerCase();
+            const suggestionsContainer = document.getElementById('destinationSuggestions');
+            
+            if (searchTerm.length < 2) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+            
+            // Filter cities based on search term
+            const filteredCities = worldCities.filter(city => 
+                city.name.toLowerCase().includes(searchTerm)
+            ).slice(0, 10); // Show top 10 matches
+            
+            suggestionsContainer.innerHTML = '';
+            
+            if (filteredCities.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.innerHTML = '<i class="fas fa-exclamation-circle"></i> No matching cities found';
+                noResults.style.padding = '10px';
+                noResults.style.color = '#6c757d';
+                suggestionsContainer.appendChild(noResults);
+            } else {
+                filteredCities.forEach(city => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `<i class="${city.icon}"></i> ${city.name}`;
+                    div.addEventListener('click', () => {
+                        document.getElementById('destination').value = city.name;
+                        suggestionsContainer.style.display = 'none';
+                    });
+                    suggestionsContainer.appendChild(div);
+                });
+            }
+            
+            suggestionsContainer.style.display = 'block';
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.id !== 'destination') {
+                document.getElementById('destinationSuggestions').style.display = 'none';
+            }
+        });
+
+        // Form Submission with Gemini AI Integration
+        document.getElementById('travelForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const destination = document.getElementById('destination').value;
+            const dates = document.getElementById('travelDates').value;
+            const travelers = document.querySelector('input[name="travelers"]:checked').value;
+            const budget = document.querySelector('input[name="budget"]:checked').value;
+            const infoNeeded = Array.from(document.querySelectorAll('input[name="infoNeeded"]:checked')).map(el => el.value);
+            const foodTypes = Array.from(document.querySelectorAll('input[name="foodTypes"]:checked')).map(el => el.value);
+            
+            // Show loading state
+            const submitBtn = document.querySelector('.btn-primary');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Plan...';
+            submitBtn.disabled = true;
+            
+            // Show AI response container
+            const aiResponse = document.getElementById('aiResponse');
+            aiResponse.style.display = 'block';
+            
+            try {
+                // Call Gemini API
+                const response = await generateTravelPlan(destination, dates, travelers, budget, infoNeeded, foodTypes);
+                
+                // Display the AI response
+                aiResponse.innerHTML = `
+                    <h3><i class="fas fa-map-marked-alt"></i> Your AI-Generated Travel Plan for ${destination}</h3>
+                    <p>${response}</p>
+                    <button class="btn-secondary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print Itinerary
+                    </button>
+                `;
+                
+                // Show print button
+                document.querySelector('.print-btn').style.display = 'flex';
+            } catch (error) {
+                console.error('Error generating travel plan:', error);
+                aiResponse.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i> Error generating travel plan: ${error.message}
+                    </div>
+                `;
+            } finally {
+                submitBtn.innerHTML = '<i class="fas fa-magic"></i> Create Plan with AI';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Generate travel plan using Gemini API
+        async function generateTravelPlan(destination, dates, travelers, budget, infoNeeded, foodTypes) {
+            if (!destination) {
+                throw new Error('Please enter a destination');
+            }
+            
+            // Create the prompt for Gemini
+            const prompt = `
+                Create a comprehensive travel itinerary for a trip to ${destination} from ${dates}. 
+                Traveler type: ${travelers}. 
+                Budget level: ${budget}.
+                
+                Include the following information:
+                - Detailed day-by-day itinerary with activities
+                - Hotel recommendations with names, addresses, and price ranges
+                - Weather information for the travel dates
+                - Transportation options and costs
+                - SIM card options with rates
+                - Travel advisories
+                - Must-visit places based on the length of stay
+                - Food recommendations: ${foodTypes.length ? foodTypes.join(', ') : 'general options'}
+                
+                Format the response in a structured way with clear sections.
+            `;
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }]
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error?.message || 'Failed to generate content');
+                }
+                
+                // Extract the generated text
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error('Gemini API error:', error);
+                throw new Error('Failed to generate travel plan. Please try again later.');
+            }
+        }
+
+        // Social Sharing
+        document.getElementById('share-facebook').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Sharing to Facebook');
+        });
+        
+        document.getElementById('share-twitter').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Sharing to Twitter');
+        });
+        
+        document.getElementById('share-instagram').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Sharing to Instagram');
+        });
+        
+        document.getElementById('share-linkedin').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Sharing to LinkedIn');
+        });
+        
+        document.getElementById('share-whatsapp').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Sharing to WhatsApp');
+        });
+
+        // Print button functionality
+        document.querySelector('.print-btn')?.addEventListener('click', function() {
+            window.print();
+        });
+    </script>
+</body>
+</html>
